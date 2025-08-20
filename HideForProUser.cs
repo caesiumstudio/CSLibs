@@ -7,7 +7,7 @@ public class HideForProUser : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (AppData.IS_TABLA_PRO)
+        if (AppData.IsProVersion())
         {
             this.gameObject.SetActive(false);
         }

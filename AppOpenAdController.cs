@@ -167,7 +167,7 @@ public class AppOpenAdController : MonoBehaviour
 
     public void ShowAppOpenAd()
     {
-        if (AppData.PAID_USER || AppData.IS_TABLA_PRO)
+        if (AppData.PAID_USER || AppData.IsProVersion())
         {
             logger.Log("Not showing for paid user");
             return;

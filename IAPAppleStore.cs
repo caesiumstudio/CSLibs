@@ -74,7 +74,7 @@ public class IAPAppleStore : IAPStore
             builder.AddProduct(item.id, item.type);
         }
 
-        logger.Log($"Initializing Unity IAP with {builder.products.Count} products");
+        // logger.Log($"Initializing Unity IAP with {builder.products.Count} products");
         // This will trigger onInitialized;
         UnityPurchasing.Initialize(this, builder);
     }
