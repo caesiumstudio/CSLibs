@@ -74,14 +74,12 @@ public class CSFirebaseMessaging
 
         if (firebaseMessage.Notification != null)
         {
-            logger.Log("###################### NOTIFICATION KEY-VALUES#####################:");
             logger.Log("Title: " + notifNotification.Title);
             logger.Log("Body: " + notifNotification.Body);
         }
 
         if (firebaseMessage.Data.Count > 0)
         {
-            logger.Log("######################DATA KEY-VALUES#####################:");
             string title = null;
             string message = null;
             string url = null;
