@@ -23,10 +23,15 @@ public class AppOpenAdController : MonoBehaviour
     private DateTime _expireTime;
     private AppOpenAd appOpenAd;
 
+
     public void Start()
     {
         _adUnitId = AppData.GetAppOpenAdUnitId();
         logger.Log("AppOpenAd UnitID: " + _adUnitId);
+        logger.Log("Adding state change listener");
+
+        AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
+
         // Initialize the Google Mobile Ads SDK.
         MobileAds.Initialize((InitializationStatus initStatus) =>
         {
@@ -34,6 +39,50 @@ public class AppOpenAdController : MonoBehaviour
             this.LoadAppOpenAd();
         });
     }
+
+    void OnAppStateChanged(AppState state)
+    {
+        logger.Log("App State changed to : " + state);
+        logger.Log("SHOW_APP_OPEN_ADS : " + AppData.SHOW_APP_OPEN_ADS);
+
+        if (state == AppState.Foreground)
+        {
+            if (IsAdAvailable() && AppData.SHOW_APP_OPEN_ADS)
+            {
+                logger.Log("Showing app open ad");
+                ShowAppOpenAd();
+            }
+            else
+            {
+                logger.Log("Ad not available.. loading new ad");
+                this.LoadAppOpenAd();
+            }
+        }
+        else
+        {
+            this.LoadAppOpenAd();
+        }
+    }
+
+    public void ShowAppOpenAd()
+    {
+        if (AppData.PAID_USER || AppData.IsProVersion())
+        {
+            logger.Log("Not showing for paid user");
+            return;
+        }
+
+        if (appOpenAd != null && appOpenAd.CanShowAd())
+        {
+            logger.Log("Showing app open ad.");
+            appOpenAd.Show();
+        }
+        else
+        {
+            logger.Error("App open ad is not ready yet.");
+        }
+    }
+
 
 
     public void LoadAppOpenAd()
@@ -56,7 +105,7 @@ public class AppOpenAdController : MonoBehaviour
         var adRequest = new AdRequest();
 
         // send the request to load the ad.
-        AppOpenAd.Load(_adUnitId,  adRequest, (AppOpenAd ad, LoadAdError error) =>
+        AppOpenAd.Load(_adUnitId, adRequest, (AppOpenAd ad, LoadAdError error) =>
             {
                 // if error is not null, the load request failed.
                 if (error != null || ad == null)
@@ -128,11 +177,7 @@ public class AppOpenAdController : MonoBehaviour
         };
     }
 
-    void Awake()
-    {
-        logger.Log("App State changed to : " + "AWAKE");
-        AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
-    }
+
 
     void OnDestroy()
     {
@@ -140,47 +185,5 @@ public class AppOpenAdController : MonoBehaviour
         if (appOpenAd != null) appOpenAd.Destroy();
     }
 
-    void OnAppStateChanged(AppState state)
-    {
-        logger.Log("App State changed to : " + state);
-        logger.Log("SHOW_APP_OPEN_ADS : " + AppData.SHOW_APP_OPEN_ADS);
 
-
-        if (state == AppState.Foreground)
-        {
-            if (IsAdAvailable() && AppData.SHOW_APP_OPEN_ADS)
-            {
-                logger.Log("Showing app open ad");
-                ShowAppOpenAd();
-            }
-            else
-            {
-                logger.Log("Ad not available.. loading new ad");
-                this.LoadAppOpenAd();
-            }
-        }
-        else
-        {
-            this.LoadAppOpenAd();
-        }
-    }
-
-    public void ShowAppOpenAd()
-    {
-        if (AppData.PAID_USER || AppData.IsProVersion())
-        {
-            logger.Log("Not showing for paid user");
-            return;
-        }
-
-        if (appOpenAd != null && appOpenAd.CanShowAd())
-        {
-            logger.Log("Showing app open ad.");
-            appOpenAd.Show();
-        }
-        else
-        {
-            logger.Error("App open ad is not ready yet.");
-        }
-    }
 }

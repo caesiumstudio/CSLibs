@@ -16,7 +16,7 @@ namespace CS
         public static Social social = new Social();
         public static BannerAds bannerAds = new BannerAds();
         public static InterstitialAds interstitialAds = new InterstitialAds();
-        public static FirebaseAnalytics firebaseAnalytics = new FirebaseAnalytics();
+        public static CSFirebaseAnalytics firebaseAnalytics = new CSFirebaseAnalytics();
         public static CSFirebaseMessaging csFireBaseMessaging = new CSFirebaseMessaging();
 
         public static GameObject GetGameObjectByTag(string tag)

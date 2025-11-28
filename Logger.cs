@@ -23,7 +23,7 @@ public class Logger
 
     public void Log(string msg)
     {
-        Debug.Log(tag + ": " + msg);
+        Debug.Log("CS_LOG: " + tag + ": " + msg);
     }
 
     public void Info(string msg)
