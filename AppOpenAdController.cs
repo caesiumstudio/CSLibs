@@ -23,7 +23,6 @@ public class AppOpenAdController : MonoBehaviour
     private DateTime _expireTime;
     private AppOpenAd appOpenAd;
 
-
     public void Start()
     {
         _adUnitId = AppData.GetAppOpenAdUnitId();
@@ -31,7 +30,6 @@ public class AppOpenAdController : MonoBehaviour
         logger.Log("Adding state change listener");
 
         AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
-
         // Initialize the Google Mobile Ads SDK.
         MobileAds.Initialize((InitializationStatus initStatus) =>
         {
@@ -43,30 +41,42 @@ public class AppOpenAdController : MonoBehaviour
     void OnAppStateChanged(AppState state)
     {
         logger.Log("App State changed to : " + state);
-        logger.Log("SHOW_APP_OPEN_ADS : " + AppData.SHOW_APP_OPEN_ADS);
 
         if (state == AppState.Foreground)
         {
             if (IsAdAvailable() && AppData.SHOW_APP_OPEN_ADS)
             {
                 logger.Log("Showing app open ad");
-                ShowAppOpenAd();
+                this.ShowAppOpenAd();
             }
             else
             {
                 logger.Log("Ad not available.. loading new ad");
-                this.LoadAppOpenAd();
+                this.LoadLandscapeAd();
             }
+        }
+        else if (!IsAdAvailable())
+        {
+            logger.Log("App moved to background and ad not available.. loading new ad");
+            this.LoadLandscapeAd();
+        }
+    }
+
+    private void LoadLandscapeAd()
+    {
+        if (Screen.orientation == ScreenOrientation.LandscapeRight || Screen.orientation == ScreenOrientation.LandscapeLeft)
+        {
+            this.LoadAppOpenAd();
         }
         else
         {
-            this.LoadAppOpenAd();
+            logger.Error("Not loading ad as orientation is not landscape");
         }
     }
 
     public void ShowAppOpenAd()
     {
-        if (AppData.PAID_USER || AppData.IsProVersion())
+        if (AppData.IsProVersion())
         {
             logger.Log("Not showing for paid user");
             return;
